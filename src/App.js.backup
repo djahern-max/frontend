@@ -1,0 +1,129 @@
+import React, { useState } from 'react';
+import {
+  CssBaseline,
+  Container,
+  Typography,
+  Box,
+  AppBar,
+  Toolbar,
+  Tabs,
+  Tab,
+  Paper
+} from '@mui/material';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import RyzeParametersForm from './components/RyzeParametersForm';
+import FinancialChart from './components/FinancialChart';
+import FinancialTable from './components/FinancialTable';
+import StaffSummaryTable from './components/StaffSummaryTable';
+import ExpenseBreakdownChart from './components/ExpenseBreakdownChart';
+
+// Create a theme
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#3f51b5',
+    },
+    secondary: {
+      main: '#f50057',
+    },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
+});
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [tabValue, setTabValue] = useState(0);
+  const [financialData, setFinancialData] = useState(null);
+
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
+
+  const handleParametersUpdated = (newData) => {
+    setFinancialData(newData);
+  };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            RYZE.ai Financial Forecast
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Paper elevation={0} sx={{ mb: 3, p: 3, bgcolor: '#f5f5f5' }}>
+          <Typography variant="h4" gutterBottom>
+            5-Year Financial Projection
+          </Typography>
+          <Typography variant="body1">
+            This application projects RYZE.ai's financial growth over the next 5 years. The model accounts for
+            monthly subscription revenue, affiliate payouts, and gradually scaling the team with salespeople,
+            developers, and administrative staff.
+          </Typography>
+        </Paper>
+
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            variant="scrollable"
+            scrollButtons="auto"
+          >
+            <Tab label="Parameters" />
+            <Tab label="Financial Charts" />
+            <Tab label="Financial Tables" />
+            <Tab label="Staff Projections" />
+            <Tab label="Expense Breakdown" />
+          </Tabs>
+        </Box>
+
+        <TabPanel value={tabValue} index={0}>
+          <RyzeParametersForm onParametersUpdated={handleParametersUpdated} />
+        </TabPanel>
+
+        <TabPanel value={tabValue} index={1}>
+          <FinancialChart data={financialData} />
+        </TabPanel>
+
+        <TabPanel value={tabValue} index={2}>
+          <FinancialTable data={financialData} />
+        </TabPanel>
+
+        <TabPanel value={tabValue} index={3}>
+          <StaffSummaryTable data={financialData} />
+        </TabPanel>
+
+        <TabPanel value={tabValue} index={4}>
+          <ExpenseBreakdownChart />
+        </TabPanel>
+      </Container>
+    </ThemeProvider>
+  );
+}
+
+export default App;
