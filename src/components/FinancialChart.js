@@ -52,29 +52,30 @@ const options = {
 const processData = (data) => {
   if (!data || !data.length) return null;
 
-  // Sort by year
-  data.sort((a, b) => a.year - b.year);
+  const sliced = data
+    .sort((a, b) => a.year - b.year)
+    .filter(item => item.year <= 2030);
 
   return {
-    labels: data.map(item => item.year),
+    labels: sliced.map(item => item.year),
     datasets: [
       {
         label: 'Income',
-        data: data.map(item => parseFloat(item.income) / 1000000), // Convert to millions
+        data: sliced.map(item => parseFloat(item.income) / 1000000),
         borderColor: 'rgb(75, 192, 75)',
         backgroundColor: 'rgba(75, 192, 75, 0.5)',
         tension: 0.3,
       },
       {
         label: 'Expenses',
-        data: data.map(item => parseFloat(item.expenses) / 1000000), // Convert to millions
+        data: sliced.map(item => parseFloat(item.expenses) / 1000000),
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
         tension: 0.3,
       },
       {
         label: 'EBITDA',
-        data: data.map(item => parseFloat(item.ebitda) / 1000000), // Convert to millions
+        data: sliced.map(item => parseFloat(item.ebitda) / 1000000),
         borderColor: 'rgb(53, 162, 235)',
         backgroundColor: 'rgba(53, 162, 235, 0.5)',
         tension: 0.3,
@@ -82,6 +83,7 @@ const processData = (data) => {
     ],
   };
 };
+
 
 const FinancialChart = ({ data }) => {
   const [chartData, setChartData] = useState(null);

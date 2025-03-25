@@ -59,13 +59,13 @@ const Dashboard = () => {
             try {
                 setIsLoading(true);
 
-                // Fetch financial data
                 const financials = await getYearlyFinancials();
-                setFinancialData(financials);
+                const filteredFinancials = financials.filter(item => item.year <= 2030);
+                setFinancialData(filteredFinancials);
 
-                // Fetch staff data
                 const staff = await getStaffSummary();
-                setStaffData(staff);
+                const filteredStaff = staff.filter(item => item.year <= 2030);
+                setStaffData(filteredStaff);
 
                 setIsLoading(false);
             } catch (error) {
@@ -95,6 +95,7 @@ const Dashboard = () => {
 
     // Calculate key metrics
     const latestYearData = financialData[financialData.length - 1];
+    const latestStaffData = staffData[staffData.length - 1];
     const firstYearData = financialData[0];
     const totalRevenue = financialData.reduce((sum, item) => sum + item.income, 0);
     const totalProfit = financialData.reduce((sum, item) => sum + item.ebitda, 0);
@@ -321,10 +322,16 @@ const Dashboard = () => {
                     <Card sx={{ height: '100%', bgcolor: '#fcf9fa' }}>
                         <CardContent>
                             <Typography variant="h6" color="text.secondary" gutterBottom>
-                                Final Client Count
+                                Users
                             </Typography>
                             <Typography variant="h4">
-                                {finalClientCount.toLocaleString()}
+                                {(latestYearData.client_count + latestStaffData.developer_count).toLocaleString()}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                                Clients: {latestYearData.client_count.toLocaleString()}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Developers: {latestStaffData.developer_count.toLocaleString()}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
                                 End of Year 5
@@ -332,6 +339,10 @@ const Dashboard = () => {
                         </CardContent>
                     </Card>
                 </Grid>
+
+
+
+
 
                 <Grid item xs={12} sm={6} md={3}>
                     <Card sx={{ height: '100%', bgcolor: '#f6f9fd' }}>

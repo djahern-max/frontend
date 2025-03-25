@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  Typography, 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
   Container,
   CircularProgress
 } from '@mui/material';
@@ -15,6 +15,7 @@ import { getYearlyFinancials } from '../api/financialService';
 
 const FinancialTable = ({ data }) => {
   const [financials, setFinancials] = useState([]);
+  const limitedFinancials = financials.filter(item => item.year <= 2030);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -24,7 +25,7 @@ const FinancialTable = ({ data }) => {
       setIsLoading(false);
       return;
     }
-    
+
     // Otherwise, fetch data from API
     const fetchData = async () => {
       try {
@@ -72,7 +73,7 @@ const FinancialTable = ({ data }) => {
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
               <TableCell>YEAR</TableCell>
-              {financials.map(item => (
+              {limitedFinancials.map(item => (
                 <TableCell key={item.year} align="right">{item.year}</TableCell>
               ))}
             </TableRow>
@@ -80,10 +81,10 @@ const FinancialTable = ({ data }) => {
           <TableBody>
             <TableRow>
               <TableCell sx={{ backgroundColor: '#e8f5e9', fontWeight: 'bold' }}>Income</TableCell>
-              {financials.map(item => (
-                <TableCell 
-                  key={`income-${item.year}`} 
-                  align="right" 
+              {limitedFinancials.map(item => (
+                <TableCell
+                  key={`income-${item.year}`}
+                  align="right"
                   sx={{ color: 'green', fontWeight: 'bold' }}
                 >
                   {formatMillions(item.income)}
@@ -92,9 +93,9 @@ const FinancialTable = ({ data }) => {
             </TableRow>
             <TableRow>
               <TableCell sx={{ backgroundColor: '#ffebee', fontWeight: 'bold' }}>Expenses</TableCell>
-              {financials.map(item => (
-                <TableCell 
-                  key={`expense-${item.year}`} 
+              {limitedFinancials.map(item => (
+                <TableCell
+                  key={`expense-${item.year}`}
                   align="right"
                   sx={{ color: 'red', fontWeight: 'bold' }}
                 >
@@ -104,9 +105,9 @@ const FinancialTable = ({ data }) => {
             </TableRow>
             <TableRow>
               <TableCell sx={{ backgroundColor: '#e3f2fd', fontWeight: 'bold' }}>EBITDA</TableCell>
-              {financials.map(item => (
-                <TableCell 
-                  key={`ebitda-${item.year}`} 
+              {limitedFinancials.map(item => (
+                <TableCell
+                  key={`ebitda-${item.year}`}
                   align="right"
                   sx={{ color: 'blue', fontWeight: 'bold' }}
                 >
