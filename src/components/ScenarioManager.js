@@ -1,5 +1,3 @@
-// Enhanced ScenarioManager Component with improved styling
-
 import React, { useState, useEffect } from 'react';
 import {
     Box,
@@ -18,11 +16,9 @@ import {
     MenuItem,
     Snackbar,
     Alert,
-
     Divider,
     Paper,
     Avatar,
-
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
@@ -31,6 +27,9 @@ import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 // Try this import path instead
 import bootIcon from '../images/boot.png';
 
@@ -198,26 +197,6 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
         }));
     };
 
-    // Pick a background color based on scenario name
-    const getScenarioColor = (name) => {
-        const colors = ['#3f51b5', '#f50057', '#00a152', '#ff9800', '#2196f3', '#9c27b0'];
-        let hash = 0;
-        for (let i = 0; i < name.length; i++) {
-            hash = name.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        return colors[Math.abs(hash) % colors.length];
-    };
-
-    // Get initials from scenario name
-    const getInitials = (name) => {
-        return name
-            .split(' ')
-            .map(word => word[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 3);
-    };
-
     return (
         <Paper
             elevation={0}
@@ -282,7 +261,6 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
 
             <Divider sx={{ mb: 2.5 }} />
 
-
             <List sx={{ maxHeight: '300px', overflow: 'auto', px: 1 }}>
                 {loading ? (
                     <ListItem>
@@ -293,88 +271,157 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                         <ListItemText primary="No scenarios found" />
                     </ListItem>
                 ) : (
-                    scenarios.map((scenario) => (
-                        <ListItem
-                            key={scenario.id}
-                            selected={selectedScenario && selectedScenario.id === scenario.id}
-                            secondaryAction={
-                                <IconButton
-                                    edge="end"
-                                    onClick={(e) => handleOpenMenu(e, scenario)}
-                                    sx={{
-                                        color: 'text.secondary',
-                                        '&:hover': {
-                                            backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                                            color: 'text.primary'
-                                        }
-                                    }}
-                                >
-                                    <MoreVertIcon />
-                                </IconButton>
-                            }
-                            sx={{
-                                cursor: 'pointer',
-                                '&:hover': {
-                                    backgroundColor: 'rgba(0, 0, 0, 0.04)'
-                                },
-                                '&.Mui-selected': {
-                                    backgroundColor: 'rgba(63, 81, 181, 0.08)',
-                                    '&:hover': {
-                                        backgroundColor: 'rgba(63, 81, 181, 0.12)',
-                                    }
-                                },
-                                borderRadius: '8px',
-                                mb: 1,
-                                transition: 'all 0.2s ease'
-                            }}
-                            onClick={() => handleSelectScenario(scenario)}
-                        >
-                            {/* Avatar with first letter of scenario name */}
-                            <Avatar
-                                sx={{
-                                    bgcolor: '#00a152', // Consistent green color as shown in your screenshot
-                                    mr: 2,
-                                    width: 36,
-                                    height: 36,
-                                    fontSize: '0.9rem',
-                                    fontWeight: 600
-                                }}
-                            >
-                                {scenario.name.toLowerCase().includes('bootstrap')
-                                    ? <img src={bootIcon} alt="Boot" style={{ width: '24px', height: '24px' }} />
-                                    : `S${scenario.name.match(/\d+/) ? scenario.name.match(/\d+/)[0] : '1'}`}
-                            </Avatar>
-
-                            <ListItemText
-                                primary={
+                    scenarios.map((scenario) => {
+                        const isSelected = selectedScenario && selectedScenario.id === scenario.id;
+                        return (
+                            <ListItem
+                                key={scenario.id}
+                                selected={isSelected}
+                                secondaryAction={
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Typography variant="subtitle1" sx={{ fontWeight: 500, mr: 1 }}>
-                                            {scenario.name}
-                                        </Typography>
-                                        {scenario.is_default && (
-                                            <StarIcon
+                                        {isSelected && (
+                                            <Typography
+                                                variant="body2"
                                                 sx={{
-                                                    color: 'gold',
-                                                    fontSize: '1.4rem',
-                                                    filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.2))'
+                                                    color: 'primary.main',
+                                                    fontWeight: 600,
+                                                    mr: 1,
+                                                    display: 'flex',
+                                                    alignItems: 'center'
                                                 }}
-                                            />
+                                            >
+                                                <CheckCircleIcon
+                                                    sx={{
+                                                        fontSize: '16px',
+                                                        mr: 0.5
+                                                    }}
+                                                />
+                                                Active
+                                            </Typography>
                                         )}
+                                        <IconButton
+                                            edge="end"
+                                            onClick={(e) => handleOpenMenu(e, scenario)}
+                                            sx={{
+                                                color: 'text.secondary',
+                                                '&:hover': {
+                                                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                                    color: 'text.primary'
+                                                }
+                                            }}
+                                        >
+                                            <MoreVertIcon />
+                                        </IconButton>
                                     </Box>
                                 }
-                                secondary={
-                                    scenario.description && (
-                                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-                                            {scenario.description}
-                                        </Typography>
-                                    )
-                                }
-                            />
-                        </ListItem>
-                    ))
+                                sx={{
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                                    },
+                                    '&.Mui-selected': {
+                                        backgroundColor: 'rgba(63, 81, 181, 0.12)',
+                                        borderLeft: '4px solid #3f51b5',
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(63, 81, 181, 0.16)',
+                                        }
+                                    },
+                                    borderRadius: '8px',
+                                    mb: 1,
+                                    transition: 'all 0.2s ease',
+                                    border: isSelected
+                                        ? '1px solid rgba(63, 81, 181, 0.5)'
+                                        : '1px solid transparent',
+                                    boxShadow: isSelected
+                                        ? '0 2px 8px rgba(63, 81, 181, 0.15)'
+                                        : 'none',
+                                }}
+                                onClick={() => handleSelectScenario(scenario)}
+                            >
+                                {/* Avatar with first letter of scenario name */}
+                                <Avatar
+                                    sx={{
+                                        bgcolor: isSelected ? '#3f51b5' :
+                                            scenario.name.toLowerCase().includes('aggressive') ? '#e91e63' :
+                                                scenario.name.toLowerCase().includes('modest') ? '#ff9800' :
+                                                    '#00a152',
+                                        mr: 2,
+                                        width: 36,
+                                        height: 36,
+                                        fontSize: '0.9rem',
+                                        fontWeight: 600,
+                                        transition: 'all 0.3s ease',
+                                        border: isSelected ? '2px solid #3f51b5' : 'none',
+                                        boxShadow: isSelected ? '0 0 0 2px rgba(63, 81, 181, 0.2)' : 'none'
+                                    }}
+                                >
+                                    {scenario.name.toLowerCase().includes('bootstrap') ? (
+                                        <img src={bootIcon} alt="Boot" style={{ width: '24px', height: '24px' }} />
+                                    ) : scenario.name.toLowerCase().includes('modest') ? (
+                                        <TrendingUpIcon sx={{ fontSize: '20px' }} />
+                                    ) : scenario.name.toLowerCase().includes('aggressive') ? (
+                                        <RocketLaunchIcon sx={{ fontSize: '20px' }} />
+                                    ) : (
+                                        `S${scenario.name.match(/\d+/) ? scenario.name.match(/\d+/)[0] : '1'}`
+                                    )}
+                                </Avatar>
+
+                                <ListItemText
+                                    primary={
+                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                            <Typography
+                                                variant="subtitle1"
+                                                sx={{
+                                                    fontWeight: isSelected ? 600 : 500,
+                                                    mr: 1,
+                                                    color: isSelected ? 'primary.main' : 'text.primary',
+                                                }}
+                                            >
+                                                {scenario.name}
+                                            </Typography>
+                                            {scenario.is_default && (
+                                                <StarIcon
+                                                    sx={{
+                                                        color: 'gold',
+                                                        fontSize: '1.4rem',
+                                                        filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.2))'
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+                                    }
+                                    secondary={
+                                        <Box>
+                                            {scenario.description && (
+                                                <Typography
+                                                    variant="body2"
+                                                    color={isSelected ? "primary.dark" : "text.secondary"}
+                                                    sx={{ mt: 0.5 }}
+                                                >
+                                                    {scenario.description}
+                                                </Typography>
+                                            )}
+                                            {scenario.investment && (
+                                                <Typography
+                                                    variant="caption"
+                                                    color={isSelected ? "primary.dark" : "text.secondary"}
+                                                    sx={{
+                                                        display: 'block',
+                                                        mt: 0.5,
+                                                        fontWeight: isSelected ? 500 : 400
+                                                    }}
+                                                >
+                                                    {`${scenario.investment} Investment`}
+                                                </Typography>
+                                            )}
+                                        </Box>
+                                    }
+                                />
+                            </ListItem>
+                        );
+                    })
                 )}
             </List>
-
 
             {/* Context Menu */}
             <Menu
