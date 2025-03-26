@@ -49,6 +49,8 @@ const DEFAULT_PARAMS = {
   sales_commission: 0.05,
   jr_dev_salary: 8333,
   admin_salary: 8333,
+  ceo_start_month: 6,
+  ceo_salary: 16667,
   marketing_percentage: 0.15,
   infrastructure_cost_per_user: 1.5,
   other_expenses_percentage: 0.10
@@ -398,8 +400,36 @@ const RyzeParametersForm = ({ scenarioId, onParametersUpdated }) => {
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography variant="h6">Staff Planning</Typography>
           </AccordionSummary>
+
+
           <AccordionDetails>
             <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="CTO Start (Month #)"
+                  name="cto_start_month"
+                  type="number"
+                  value={getParamValue('cto_start_month')}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  inputProps={{ min: 0, max: 60, step: 1 }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextField
+                  label="CEO Start (Month #)"
+                  name="ceo_start_month"
+                  type="number"
+                  value={getParamValue('ceo_start_month')}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  inputProps={{ min: 0, max: 60, step: 1 }}
+                />
+              </Grid>
               <Grid item xs={12} sm={4}>
                 <TextField
                   label="Sales Start (Month #)"
@@ -467,6 +497,7 @@ const RyzeParametersForm = ({ scenarioId, onParametersUpdated }) => {
               </Grid>
             </Grid>
           </AccordionDetails>
+
         </Accordion>
 
         <Accordion>
@@ -481,6 +512,20 @@ const RyzeParametersForm = ({ scenarioId, onParametersUpdated }) => {
                   name="cto_salary"
                   type="number"
                   value={getParamValue('cto_salary')}
+                  onChange={handleChange}
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  inputProps={{ min: 0 }}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={3}>
+                <TextField
+                  label="CEO Salary ($/month)"
+                  name="ceo_salary"
+                  type="number"
+                  value={getParamValue('ceo_salary')}
                   onChange={handleChange}
                   fullWidth
                   variant="outlined"

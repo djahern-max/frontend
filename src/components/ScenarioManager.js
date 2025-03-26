@@ -1,3 +1,5 @@
+// Enhanced ScenarioManager Component with improved styling
+
 import React, { useState, useEffect } from 'react';
 import {
     Box,
@@ -16,9 +18,11 @@ import {
     MenuItem,
     Snackbar,
     Alert,
-    Tooltip,
+
     Divider,
-    Paper
+    Paper,
+    Avatar,
+
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
@@ -26,6 +30,10 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import StarIcon from '@mui/icons-material/Star';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+// Try this import path instead
+import bootIcon from '../images/boot.png';
+
 import {
     getScenarios,
     createScenario,
@@ -190,24 +198,92 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
         }));
     };
 
+    // Pick a background color based on scenario name
+    const getScenarioColor = (name) => {
+        const colors = ['#3f51b5', '#f50057', '#00a152', '#ff9800', '#2196f3', '#9c27b0'];
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return colors[Math.abs(hash) % colors.length];
+    };
+
+    // Get initials from scenario name
+    const getInitials = (name) => {
+        return name
+            .split(' ')
+            .map(word => word[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 3);
+    };
+
     return (
-        <Paper elevation={2} sx={{ p: 2, mb: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6">Forecast Scenarios</Typography>
+        <Paper
+            elevation={0}
+            sx={{
+                p: 3,
+                mb: 3,
+                borderRadius: '12px',
+                border: '1px solid rgba(0, 0, 0, 0.08)',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                    boxShadow: '0 6px 16px rgba(0, 0, 0, 0.08)',
+                }
+            }}
+        >
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 2.5
+            }}>
+                <Typography
+                    variant="h5"
+                    sx={{
+                        fontWeight: 600,
+                        color: 'text.primary',
+                        position: 'relative'
+                    }}
+                >
+                    Forecast Scenarios
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            height: '3px',
+                            width: '40px',
+                            backgroundColor: 'primary.main',
+                            bottom: '-8px',
+                            left: 0,
+                            borderRadius: '2px'
+                        }}
+                    />
+                </Typography>
                 <Button
                     variant="contained"
                     color="primary"
-                    size="small"
+                    size="medium"
                     startIcon={<AddIcon />}
                     onClick={handleOpenCreateDialog}
+                    sx={{
+                        borderRadius: '8px',
+                        textTransform: 'none',
+                        padding: '8px 16px',
+                        boxShadow: '0 2px 8px rgba(63, 81, 181, 0.25)',
+                        '&:hover': {
+                            boxShadow: '0 4px 12px rgba(63, 81, 181, 0.35)',
+                        }
+                    }}
                 >
                     New Scenario
                 </Button>
             </Box>
 
-            <Divider sx={{ mb: 2 }} />
+            <Divider sx={{ mb: 2.5 }} />
 
-            <List sx={{ maxHeight: '250px', overflow: 'auto' }}>
+
+            <List sx={{ maxHeight: '300px', overflow: 'auto', px: 1 }}>
                 {loading ? (
                     <ListItem>
                         <ListItemText primary="Loading scenarios..." />
@@ -222,81 +298,153 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                             key={scenario.id}
                             selected={selectedScenario && selectedScenario.id === scenario.id}
                             secondaryAction={
-                                <IconButton edge="end" onClick={(e) => handleOpenMenu(e, scenario)}>
+                                <IconButton
+                                    edge="end"
+                                    onClick={(e) => handleOpenMenu(e, scenario)}
+                                    sx={{
+                                        color: 'text.secondary',
+                                        '&:hover': {
+                                            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                            color: 'text.primary'
+                                        }
+                                    }}
+                                >
                                     <MoreVertIcon />
                                 </IconButton>
                             }
                             sx={{
                                 cursor: 'pointer',
-                                '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-                                borderRadius: 1
+                                '&:hover': {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.04)'
+                                },
+                                '&.Mui-selected': {
+                                    backgroundColor: 'rgba(63, 81, 181, 0.08)',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(63, 81, 181, 0.12)',
+                                    }
+                                },
+                                borderRadius: '8px',
+                                mb: 1,
+                                transition: 'all 0.2s ease'
                             }}
                             onClick={() => handleSelectScenario(scenario)}
                         >
+                            {/* Avatar with first letter of scenario name */}
+                            <Avatar
+                                sx={{
+                                    bgcolor: '#00a152', // Consistent green color as shown in your screenshot
+                                    mr: 2,
+                                    width: 36,
+                                    height: 36,
+                                    fontSize: '0.9rem',
+                                    fontWeight: 600
+                                }}
+                            >
+                                {scenario.name.toLowerCase().includes('bootstrap')
+                                    ? <img src={bootIcon} alt="Boot" style={{ width: '24px', height: '24px' }} />
+                                    : `S${scenario.name.match(/\d+/) ? scenario.name.match(/\d+/)[0] : '1'}`}
+                            </Avatar>
+
                             <ListItemText
                                 primary={
                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        {scenario.is_default ? (
-                                            <Tooltip title="Default Scenario">
-                                                <StarIcon sx={{ mr: 1, color: 'gold' }} fontSize="small" />
-                                            </Tooltip>
-                                        ) : (
-                                            <Box sx={{ width: 24, mr: 1 }} /> // Empty space to align items
+                                        <Typography variant="subtitle1" sx={{ fontWeight: 500, mr: 1 }}>
+                                            {scenario.name}
+                                        </Typography>
+                                        {scenario.is_default && (
+                                            <StarIcon
+                                                sx={{
+                                                    color: 'gold',
+                                                    fontSize: '1.4rem',
+                                                    filter: 'drop-shadow(0px 1px 1px rgba(0,0,0,0.2))'
+                                                }}
+                                            />
                                         )}
-                                        {scenario.name}
                                     </Box>
                                 }
-                                secondary={scenario.description}
+                                secondary={
+                                    scenario.description && (
+                                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                            {scenario.description}
+                                        </Typography>
+                                    )
+                                }
                             />
                         </ListItem>
                     ))
                 )}
             </List>
 
+
             {/* Context Menu */}
             <Menu
                 anchorEl={menuAnchorEl}
                 open={Boolean(menuAnchorEl)}
                 onClose={handleCloseMenu}
+                PaperProps={{
+                    sx: {
+                        mt: 0.5,
+                        boxShadow: '0px 5px 15px rgba(0, 0, 0, 0.15)',
+                        borderRadius: '8px'
+                    }
+                }}
             >
-                <MenuItem onClick={handleOpenEditDialog}>
+                <MenuItem onClick={handleOpenEditDialog} sx={{ py: 1.5 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        Edit Scenario
+                        <EditIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
+                        <Typography variant="body2">Edit Scenario</Typography>
                     </Box>
                 </MenuItem>
-                <MenuItem onClick={handleOpenDuplicateDialog}>
+                <MenuItem onClick={handleOpenDuplicateDialog} sx={{ py: 1.5 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <FileCopyIcon fontSize="small" sx={{ mr: 1 }} />
-                        Duplicate
+                        <FileCopyIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
+                        <Typography variant="body2">Duplicate</Typography>
                     </Box>
                 </MenuItem>
                 {!selectedScenario?.is_default && (
-                    <MenuItem onClick={handleSetDefault}>
+                    <MenuItem onClick={handleSetDefault} sx={{ py: 1.5 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <StarOutlineIcon fontSize="small" sx={{ mr: 1 }} />
-                            Set as Default
+                            <StarOutlineIcon fontSize="small" sx={{ mr: 1.5, color: '#FFB800' }} />
+                            <Typography variant="body2">Set as Default</Typography>
                         </Box>
                     </MenuItem>
                 )}
                 <Divider />
                 {!selectedScenario?.is_default && (
-                    <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>
+                    <MenuItem onClick={handleDelete} sx={{ py: 1.5, color: 'error.main' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <DeleteIcon fontSize="small" sx={{ mr: 1 }} />
-                            Delete
+                            <DeleteIcon fontSize="small" sx={{ mr: 1.5 }} />
+                            <Typography variant="body2">Delete</Typography>
                         </Box>
                     </MenuItem>
                 )}
             </Menu>
 
             {/* Create/Edit Dialog */}
-            <Dialog open={openDialog} onClose={handleDialogClose} maxWidth="sm" fullWidth>
-                <DialogTitle>
-                    {dialogMode === 'create' ? 'Create New Scenario' :
-                        dialogMode === 'duplicate' ? 'Duplicate Scenario' :
-                            'Edit Scenario'}
+            <Dialog
+                open={openDialog}
+                onClose={handleDialogClose}
+                maxWidth="sm"
+                fullWidth
+                PaperProps={{
+                    sx: {
+                        borderRadius: '12px',
+                        overflow: 'hidden'
+                    }
+                }}
+            >
+                <DialogTitle sx={{
+                    borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+                    backgroundColor: 'rgba(63, 81, 181, 0.05)',
+                    py: 2.5
+                }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                        {dialogMode === 'create' ? 'Create New Scenario' :
+                            dialogMode === 'duplicate' ? 'Duplicate Scenario' :
+                                'Edit Scenario'}
+                    </Typography>
                 </DialogTitle>
-                <DialogContent>
+                <DialogContent sx={{ pt: 3, pb: 2 }}>
                     <TextField
                         autoFocus
                         margin="dense"
@@ -307,7 +455,12 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                         variant="outlined"
                         value={dialogData.name}
                         onChange={handleDialogInputChange}
-                        sx={{ mb: 2 }}
+                        sx={{ mb: 2.5 }}
+                        InputProps={{
+                            sx: {
+                                borderRadius: '8px'
+                            }
+                        }}
                     />
                     <TextField
                         margin="dense"
@@ -319,16 +472,38 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                         value={dialogData.description}
                         onChange={handleDialogInputChange}
                         multiline
-                        rows={2}
+                        rows={3}
+                        InputProps={{
+                            sx: {
+                                borderRadius: '8px'
+                            }
+                        }}
                     />
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleDialogClose}>Cancel</Button>
+                <DialogActions sx={{
+                    px: 3,
+                    py: 2,
+                    borderTop: '1px solid rgba(0, 0, 0, 0.08)',
+                }}>
+                    <Button
+                        onClick={handleDialogClose}
+                        sx={{
+                            textTransform: 'none',
+                            color: 'text.secondary'
+                        }}
+                    >
+                        Cancel
+                    </Button>
                     <Button
                         onClick={handleDialogSubmit}
                         variant="contained"
                         color="primary"
                         disabled={!dialogData.name.trim()}
+                        sx={{
+                            textTransform: 'none',
+                            borderRadius: '8px',
+                            px: 3
+                        }}
                     >
                         {dialogMode === 'create' || dialogMode === 'duplicate' ? 'Create' : 'Save'}
                     </Button>
@@ -342,7 +517,14 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                 onClose={handleCloseNotification}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
-                <Alert onClose={handleCloseNotification} severity={notification.severity}>
+                <Alert
+                    onClose={handleCloseNotification}
+                    severity={notification.severity}
+                    sx={{
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                    }}
+                >
                     {notification.message}
                 </Alert>
             </Snackbar>

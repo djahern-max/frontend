@@ -134,6 +134,15 @@ const StaffSummaryTable = ({ scenarioId, data }) => {
                                 </TableCell>
                             ))}
                         </TableRow>
+                        <TableRow sx={{ backgroundColor: '#f9f9f9' }}>
+                            <TableCell sx={{ fontWeight: 'bold' }}>CEO</TableCell>
+                            {staffData.map(item => (
+                                <TableCell key={`ceo-${item.year}`} align="right">
+                                    {/* Use a fallback value (1) if ceo_count is not defined */}
+                                    {item.ceo_count !== undefined ? item.ceo_count : 1}
+                                </TableCell>
+                            ))}
+                        </TableRow>
                         <TableRow sx={{ backgroundColor: '#e8f4ff', fontWeight: 'bold' }}>
                             <TableCell sx={{ fontWeight: 'bold' }}>TOTAL STAFF</TableCell>
                             {staffData.map(item => (
@@ -142,6 +151,7 @@ const StaffSummaryTable = ({ scenarioId, data }) => {
                                 </TableCell>
                             ))}
                         </TableRow>
+
                     </TableBody>
                 </Table>
             </TableContainer>
