@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     AppBar,
     Box,
@@ -13,10 +14,10 @@ import {
     Avatar,
     Drawer,
     List,
-    ListItem,
     ListItemIcon,
     ListItemText,
-    Divider
+    Divider,
+    ListItemButton
 } from '@mui/material';
 import {
     Menu as MenuIcon,
@@ -30,17 +31,45 @@ import {
     Logout as LogoutIcon,
     ChevronRight as ChevronRightIcon
 } from '@mui/icons-material';
-// Import the logo the same way as the boot icon
+// Import the logo
 import logoImage from '../images/Logo.png';
+import api from '../api/apiService';
 
 const Header = ({ currentPage, onPageChange }) => {
     const theme = useTheme();
+    const navigate = useNavigate();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [mobileOpen, setMobileOpen] = useState(false);
     const [userMenuAnchor, setUserMenuAnchor] = useState(null);
+    const [user, setUser] = useState(null);
 
-    // Placeholder for user authentication state
+    // Check if user is authenticated
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            const token = localStorage.getItem('accessToken');
+
+            if (token) {
+                try {
+                    // Set the token in the API service
+                    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                    const response = await api.get('/api/auth/me');
+                    setUser(response.data);
+                    setIsAuthenticated(true);
+                } catch (error) {
+                    console.error('Failed to get user info:', error);
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('tokenType');
+                    setIsAuthenticated(false);
+                }
+            } else {
+                setIsAuthenticated(false);
+            }
+        };
+
+        checkAuth();
+    }, []);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -55,20 +84,25 @@ const Header = ({ currentPage, onPageChange }) => {
     };
 
     const handleLogin = () => {
-        // Implementation will come later
-        console.log('Login clicked');
+        navigate('/login');
         handleUserMenuClose();
     };
 
     const handleRegister = () => {
-        // Implementation will come later
-        console.log('Register clicked');
+        navigate('/register');
         handleUserMenuClose();
     };
 
     const handleLogout = () => {
-        // Implementation will come later
-        console.log('Logout clicked');
+        // Clear authentication data
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('tokenType');
+        delete api.defaults.headers.common['Authorization'];
+        setIsAuthenticated(false);
+        setUser(null);
+
+        // Redirect to login page
+        navigate('/login');
         handleUserMenuClose();
     };
 
@@ -91,13 +125,14 @@ const Header = ({ currentPage, onPageChange }) => {
         { name: 'Settings', icon: <SettingsIcon />, value: 'settings' }
     ];
 
+
     const drawer = (
         <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1 }}>
                 <Box
                     component="img"
                     src={logoImage}
-                    alt="Logo"
+                    alt="GrowthCanvas Logo"
                     sx={{
                         height: 40,
                         cursor: 'pointer',
@@ -112,8 +147,7 @@ const Header = ({ currentPage, onPageChange }) => {
             <Divider />
             <List>
                 {pages.map((page) => (
-                    <ListItem
-                        button
+                    <ListItemButton
                         key={page.value}
                         selected={currentPage === page.value}
                         onClick={() => handlePageChange(page.value)}
@@ -135,32 +169,44 @@ const Header = ({ currentPage, onPageChange }) => {
                             primary={page.name}
                             primaryTypographyProps={{
                                 fontWeight: currentPage === page.value ? 600 : 400,
-                                color: currentPage === page.value ? 'primary.main' : 'inherit'
+                                color: currentPage === page.value ? 'primary.main' : 'inherit',
+                                component: "span"
                             }}
                         />
-                    </ListItem>
+                    </ListItemButton>
                 ))}
             </List>
             <Divider />
             <List>
                 {isAuthenticated ? (
-                    <ListItem button onClick={handleLogout}>
+                    <ListItemButton onClick={handleLogout}>
                         <ListItemIcon>
                             <LogoutIcon />
                         </ListItemIcon>
-                        <ListItemText primary="Logout" />
-                    </ListItem>
+                        <ListItemText
+                            primary="Logout"
+                            primaryTypographyProps={{
+                                component: "span"
+                            }}
+                        />
+                    </ListItemButton>
                 ) : (
-                    <ListItem button onClick={handleLogin}>
+                    <ListItemButton onClick={handleLogin}>
                         <ListItemIcon>
                             <LoginIcon />
                         </ListItemIcon>
-                        <ListItemText primary="Login / Register" />
-                    </ListItem>
+                        <ListItemText
+                            primary="Login / Register"
+                            primaryTypographyProps={{
+                                component: "span"
+                            }}
+                        />
+                    </ListItemButton>
                 )}
             </List>
         </Box>
     );
+
 
     return (
         <>
@@ -188,7 +234,7 @@ const Header = ({ currentPage, onPageChange }) => {
                     <Box
                         component="img"
                         src={logoImage}
-                        alt="Logo"
+                        alt="GrowthCanvas Logo"
                         sx={{
                             height: 40,
                             cursor: 'pointer',
@@ -226,11 +272,22 @@ const Header = ({ currentPage, onPageChange }) => {
 
                     <Box sx={{ ml: 'auto' }}>
                         {isAuthenticated ? (
-                            <IconButton onClick={handleUserMenuOpen} size="large" sx={{ color: 'white' }}>
-                                <Avatar sx={{ width: 32, height: 32, bgcolor: 'white', color: theme.palette.primary.main }}>
-                                    <AccountIcon />
-                                </Avatar>
-                            </IconButton>
+                            <Button
+                                variant="outlined"
+                                onClick={handleLogout}
+                                startIcon={<LogoutIcon />}
+                                sx={{
+                                    borderRadius: '20px',
+                                    color: 'white',
+                                    borderColor: 'white',
+                                    '&:hover': {
+                                        borderColor: 'white',
+                                        backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                                    }
+                                }}
+                            >
+                                Logout
+                            </Button>
                         ) : (
                             <Button
                                 variant="outlined"
@@ -263,25 +320,42 @@ const Header = ({ currentPage, onPageChange }) => {
                             }}
                         >
                             {isAuthenticated ? (
-                                <MenuItem onClick={handleLogout}>
-                                    <ListItemIcon>
-                                        <LogoutIcon fontSize="small" />
-                                    </ListItemIcon>
-                                    Logout
-                                </MenuItem>
+                                [
+                                    <MenuItem key="profile" onClick={handleUserMenuClose} disabled>
+                                        <ListItemIcon>
+                                            <AccountIcon fontSize="small" />
+                                        </ListItemIcon>
+                                        <Typography variant="body2" component="span">
+                                            {user ? user.username : 'Profile'}
+                                        </Typography>
+                                    </MenuItem>,
+                                    <Divider key="divider" />,
+                                    <MenuItem key="logout" onClick={handleLogout}>
+                                        <ListItemIcon>
+                                            <LogoutIcon fontSize="small" />
+                                        </ListItemIcon>
+                                        <Typography variant="body2" component="span">
+                                            Logout
+                                        </Typography>
+                                    </MenuItem>
+                                ]
                             ) : (
                                 [
                                     <MenuItem key="login" onClick={handleLogin}>
                                         <ListItemIcon>
                                             <LoginIcon fontSize="small" />
                                         </ListItemIcon>
-                                        Login
+                                        <Typography variant="body2" component="span">
+                                            Login
+                                        </Typography>
                                     </MenuItem>,
                                     <MenuItem key="register" onClick={handleRegister}>
                                         <ListItemIcon>
                                             <AccountIcon fontSize="small" />
                                         </ListItemIcon>
-                                        Register
+                                        <Typography variant="body2" component="span">
+                                            Register
+                                        </Typography>
                                     </MenuItem>
                                 ]
                             )}

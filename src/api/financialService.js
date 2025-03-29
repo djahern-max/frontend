@@ -1,13 +1,11 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8000';
+import apiService from './apiService';
 
 /**
  * Get all available forecast scenarios
  */
 export const getScenarios = async () => {
   try {
-    const response = await axios.get(`${API_URL}/api/scenarios`);
+    const response = await apiService.scenarios.getAll();
     return response.data;
   } catch (error) {
     console.error('Error fetching scenarios:', error);
@@ -20,7 +18,7 @@ export const getScenarios = async () => {
  */
 export const getScenario = async (scenarioId) => {
   try {
-    const response = await axios.get(`${API_URL}/api/scenarios/${scenarioId}`);
+    const response = await apiService.scenarios.getById(scenarioId);
     return response.data;
   } catch (error) {
     console.error(`Error fetching scenario ${scenarioId}:`, error);
@@ -33,7 +31,7 @@ export const getScenario = async (scenarioId) => {
  */
 export const createScenario = async (data) => {
   try {
-    const response = await axios.post(`${API_URL}/api/scenarios`, data);
+    const response = await apiService.scenarios.create(data);
     return response.data;
   } catch (error) {
     console.error('Error creating scenario:', error);
@@ -46,7 +44,7 @@ export const createScenario = async (data) => {
  */
 export const updateScenario = async (scenarioId, data) => {
   try {
-    const response = await axios.put(`${API_URL}/api/scenarios/${scenarioId}`, data);
+    const response = await apiService.scenarios.update(scenarioId, data);
     return response.data;
   } catch (error) {
     console.error(`Error updating scenario ${scenarioId}:`, error);
@@ -59,7 +57,7 @@ export const updateScenario = async (scenarioId, data) => {
  */
 export const deleteScenario = async (scenarioId) => {
   try {
-    const response = await axios.delete(`${API_URL}/api/scenarios/${scenarioId}`);
+    const response = await apiService.scenarios.delete(scenarioId);
     return response.data;
   } catch (error) {
     console.error(`Error deleting scenario ${scenarioId}:`, error);
@@ -72,7 +70,7 @@ export const deleteScenario = async (scenarioId) => {
  */
 export const getScenarioYearlyFinancials = async (scenarioId) => {
   try {
-    const response = await axios.get(`${API_URL}/api/scenarios/${scenarioId}/financials/yearly`);
+    const response = await apiService.scenarios.getYearlyFinancials(scenarioId);
     return response.data;
   } catch (error) {
     console.error(`Error fetching yearly financials for scenario ${scenarioId}:`, error);
@@ -85,7 +83,7 @@ export const getScenarioYearlyFinancials = async (scenarioId) => {
  */
 export const getScenarioMonthlyFinancials = async (scenarioId) => {
   try {
-    const response = await axios.get(`${API_URL}/api/scenarios/${scenarioId}/financials/monthly`);
+    const response = await apiService.scenarios.getMonthlyFinancials(scenarioId);
     return response.data;
   } catch (error) {
     console.error(`Error fetching monthly financials for scenario ${scenarioId}:`, error);
@@ -98,7 +96,7 @@ export const getScenarioMonthlyFinancials = async (scenarioId) => {
  */
 export const getScenarioParameters = async (scenarioId) => {
   try {
-    const response = await axios.get(`${API_URL}/api/scenarios/${scenarioId}/parameters`);
+    const response = await apiService.scenarios.getParameters(scenarioId);
     return response.data;
   } catch (error) {
     console.error(`Error fetching parameters for scenario ${scenarioId}:`, error);
@@ -111,7 +109,7 @@ export const getScenarioParameters = async (scenarioId) => {
  */
 export const updateScenarioParameters = async (scenarioId, params) => {
   try {
-    const response = await axios.post(`${API_URL}/api/scenarios/${scenarioId}/parameters/update`, params);
+    const response = await apiService.scenarios.updateParameters(scenarioId, params);
     return response.data;
   } catch (error) {
     console.error(`Error updating parameters for scenario ${scenarioId}:`, error);
@@ -124,7 +122,7 @@ export const updateScenarioParameters = async (scenarioId, params) => {
  */
 export const getScenarioStaffSummary = async (scenarioId) => {
   try {
-    const response = await axios.get(`${API_URL}/api/scenarios/${scenarioId}/staff/yearly`);
+    const response = await apiService.scenarios.getYearlyStaff(scenarioId);
     return response.data;
   } catch (error) {
     console.error(`Error fetching staff summary for scenario ${scenarioId}:`, error);
@@ -137,7 +135,7 @@ export const getScenarioStaffSummary = async (scenarioId) => {
  */
 export const getScenarioExpenseBreakdown = async (scenarioId) => {
   try {
-    const response = await axios.get(`${API_URL}/api/scenarios/${scenarioId}/expense-breakdown/monthly`);
+    const response = await apiService.scenarios.getMonthlyExpenses(scenarioId);
     return response.data;
   } catch (error) {
     console.error(`Error fetching expense breakdown for scenario ${scenarioId}:`, error);
@@ -152,7 +150,8 @@ export const getScenarioExpenseBreakdown = async (scenarioId) => {
  */
 export const getYearlyFinancials = async () => {
   try {
-    const response = await axios.get(`${API_URL}/api/financials/yearly`);
+    // Use the standard api object from apiService for legacy endpoints
+    const response = await apiService.get('/api/financials/yearly');
     return response.data;
   } catch (error) {
     console.error('Error fetching yearly financials:', error);
@@ -165,7 +164,7 @@ export const getYearlyFinancials = async () => {
  */
 export const getMonthlyFinancials = async () => {
   try {
-    const response = await axios.get(`${API_URL}/api/financials/monthly`);
+    const response = await apiService.get('/api/financials/monthly');
     return response.data;
   } catch (error) {
     console.error('Error fetching monthly financials:', error);
@@ -178,7 +177,7 @@ export const getMonthlyFinancials = async () => {
  */
 export const getGrowthParameters = async () => {
   try {
-    const response = await axios.get(`${API_URL}/api/parameters`);
+    const response = await apiService.get('/api/parameters');
     return response.data;
   } catch (error) {
     console.error('Error fetching growth parameters:', error);
@@ -191,7 +190,7 @@ export const getGrowthParameters = async () => {
  */
 export const updateGrowthParameters = async (params) => {
   try {
-    const response = await axios.post(`${API_URL}/api/parameters/update`, params);
+    const response = await apiService.post('/api/parameters/update', params);
     return response.data;
   } catch (error) {
     console.error('Error updating growth parameters:', error);
@@ -204,7 +203,7 @@ export const updateGrowthParameters = async (params) => {
  */
 export const getStaffSummary = async () => {
   try {
-    const response = await axios.get(`${API_URL}/api/staff/yearly`);
+    const response = await apiService.get('/api/staff/yearly');
     return response.data;
   } catch (error) {
     console.error('Error fetching staff summary:', error);
@@ -217,7 +216,7 @@ export const getStaffSummary = async () => {
  */
 export const getExpenseBreakdown = async () => {
   try {
-    const response = await axios.get(`${API_URL}/api/expense-breakdown/monthly`);
+    const response = await apiService.get('/api/expense-breakdown/monthly');
     return response.data;
   } catch (error) {
     console.error('Error fetching expense breakdown:', error);

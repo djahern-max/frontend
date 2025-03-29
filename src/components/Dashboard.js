@@ -7,7 +7,8 @@ import {
     Box,
     Card,
     CardContent,
-    CircularProgress
+    CircularProgress,
+    Button
 } from '@mui/material';
 import {
     Chart as ChartJS,
@@ -47,15 +48,36 @@ const formatCurrency = (value) => {
     return '$' + value.toFixed(0);
 };
 
-const Dashboard = ({ financialData, staffData, loading }) => {
+const Dashboard = ({ financialData, staffData, loading, onNavigateToSettings }) => {
     console.log("Dashboard props:", { loading, financialData, staffData });
 
-    // Super defensive check
-    if (loading || !financialData || !staffData || !Array.isArray(financialData) || !Array.isArray(staffData) || financialData.length === 0 || staffData.length === 0) {
+    // Check for loading state first
+    if (loading) {
         return (
             <Container sx={{ display: 'flex', justifyContent: 'center', padding: 4 }}>
                 <CircularProgress />
             </Container>
+        );
+    }
+
+    // Then check if data is available
+    if (!financialData || !staffData || !Array.isArray(financialData) || !Array.isArray(staffData) || financialData.length === 0 || staffData.length === 0) {
+        return (
+            <Box sx={{ textAlign: 'center', py: 8 }}>
+                <Typography variant="h6" color="text.secondary" gutterBottom>
+                    No financial data available for this scenario
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                    Go to the Settings tab to configure growth parameters for this scenario
+                </Typography>
+                <Button
+                    variant="contained"
+                    sx={{ mt: 3 }}
+                    onClick={onNavigateToSettings} // Use the passed in function
+                >
+                    Configure Parameters
+                </Button>
+            </Box>
         );
     }
 

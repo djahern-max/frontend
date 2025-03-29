@@ -40,7 +40,7 @@ import {
     deleteScenario
 } from '../api/financialService';
 
-const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
+const ScenarioManager = ({ currentScenarioId, onScenarioChange, onNavigateToSettings }) => {
     const [scenarios, setScenarios] = useState([]);
     const [loading, setLoading] = useState(true);
     const [openDialog, setOpenDialog] = useState(false);
@@ -139,8 +139,13 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
     const handleDialogSubmit = async () => {
         try {
             if (dialogMode === 'create' || dialogMode === 'duplicate') {
-                await createScenario(dialogData);
+                const result = await createScenario(dialogData);
                 showNotification('Scenario created successfully');
+
+                // After creating a scenario, navigate to settings
+                if (onNavigateToSettings) {
+                    onNavigateToSettings();
+                }
             } else if (dialogMode === 'edit') {
                 await updateScenario(selectedScenario.id, dialogData);
                 showNotification('Scenario updated successfully');
@@ -264,11 +269,17 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
             <List sx={{ maxHeight: '300px', overflow: 'auto', px: 1 }}>
                 {loading ? (
                     <ListItem>
-                        <ListItemText primary="Loading scenarios..." />
+                        <ListItemText
+                            primary="Loading scenarios..."
+                            primaryTypographyProps={{ component: "span" }}
+                        />
                     </ListItem>
                 ) : scenarios.length === 0 ? (
                     <ListItem>
-                        <ListItemText primary="No scenarios found" />
+                        <ListItemText
+                            primary="No scenarios found"
+                            primaryTypographyProps={{ component: "span" }}
+                        />
                     </ListItem>
                 ) : (
                     scenarios.map((scenario) => {
@@ -282,6 +293,7 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                                         {isSelected && (
                                             <Typography
                                                 variant="body2"
+                                                component="span"
                                                 sx={{
                                                     color: 'primary.main',
                                                     fontWeight: 600,
@@ -371,6 +383,7 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                             <Typography
                                                 variant="subtitle1"
+                                                component="span"
                                                 sx={{
                                                     fontWeight: isSelected ? 600 : 500,
                                                     mr: 1,
@@ -391,12 +404,13 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                                         </Box>
                                     }
                                     secondary={
-                                        <Box>
+                                        <Box component="span">
                                             {scenario.description && (
                                                 <Typography
                                                     variant="body2"
+                                                    component="span"
                                                     color={isSelected ? "primary.dark" : "text.secondary"}
-                                                    sx={{ mt: 0.5 }}
+                                                    sx={{ mt: 0.5, display: "block" }}
                                                 >
                                                     {scenario.description}
                                                 </Typography>
@@ -404,6 +418,7 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                                             {scenario.investment && (
                                                 <Typography
                                                     variant="caption"
+                                                    component="span"
                                                     color={isSelected ? "primary.dark" : "text.secondary"}
                                                     sx={{
                                                         display: 'block',
@@ -416,6 +431,8 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                                             )}
                                         </Box>
                                     }
+                                    primaryTypographyProps={{ component: "span" }}
+                                    secondaryTypographyProps={{ component: "span" }}
                                 />
                             </ListItem>
                         );
@@ -439,20 +456,20 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                 <MenuItem onClick={handleOpenEditDialog} sx={{ py: 1.5 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <EditIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
-                        <Typography variant="body2">Edit Scenario</Typography>
+                        <Typography variant="body2" component="span">Edit Scenario</Typography>
                     </Box>
                 </MenuItem>
                 <MenuItem onClick={handleOpenDuplicateDialog} sx={{ py: 1.5 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <FileCopyIcon fontSize="small" sx={{ mr: 1.5, color: 'text.secondary' }} />
-                        <Typography variant="body2">Duplicate</Typography>
+                        <Typography variant="body2" component="span">Duplicate</Typography>
                     </Box>
                 </MenuItem>
                 {!selectedScenario?.is_default && (
                     <MenuItem onClick={handleSetDefault} sx={{ py: 1.5 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <StarOutlineIcon fontSize="small" sx={{ mr: 1.5, color: '#FFB800' }} />
-                            <Typography variant="body2">Set as Default</Typography>
+                            <Typography variant="body2" component="span">Set as Default</Typography>
                         </Box>
                     </MenuItem>
                 )}
@@ -461,7 +478,7 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                     <MenuItem onClick={handleDelete} sx={{ py: 1.5, color: 'error.main' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <DeleteIcon fontSize="small" sx={{ mr: 1.5 }} />
-                            <Typography variant="body2">Delete</Typography>
+                            <Typography variant="body2" component="span">Delete</Typography>
                         </Box>
                     </MenuItem>
                 )}
@@ -480,16 +497,17 @@ const ScenarioManager = ({ currentScenarioId, onScenarioChange }) => {
                     }
                 }}
             >
-                <DialogTitle sx={{
-                    borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
-                    backgroundColor: 'rgba(63, 81, 181, 0.05)',
-                    py: 2.5
-                }}>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        {dialogMode === 'create' ? 'Create New Scenario' :
-                            dialogMode === 'duplicate' ? 'Duplicate Scenario' :
-                                'Edit Scenario'}
-                    </Typography>
+                <DialogTitle
+                    sx={{
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.08)',
+                        backgroundColor: 'rgba(63, 81, 181, 0.05)',
+                        py: 2.5,
+                        fontWeight: 600
+                    }}
+                >
+                    {dialogMode === 'create' ? 'Create New Scenario' :
+                        dialogMode === 'duplicate' ? 'Duplicate Scenario' :
+                            'Edit Scenario'}
                 </DialogTitle>
                 <DialogContent sx={{ pt: 3, pb: 2 }}>
                     <TextField

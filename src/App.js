@@ -7,6 +7,7 @@ import {
   ThemeProvider,
   createTheme,
 } from '@mui/material';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
 // Components
 import Header from './components/Header';
@@ -17,6 +18,9 @@ import RyzeParametersForm from './components/RyzeParametersForm';
 import StaffSummaryTable from './components/StaffSummaryTable';
 import ExpenseBreakdownChart from './components/ExpenseBreakdownChart';
 import ScenarioManager from './components/ScenarioManager';
+import LoginForm from './components/auth/LoginForm';
+import RegisterForm from './components/auth/RegisterForm';
+import PrivateRoute from './components/auth/PrivateRoute';
 
 // API Services
 import {
@@ -95,6 +99,10 @@ function App() {
     setCurrentScenarioId(scenarioId);
   };
 
+  const handleNavigateToSettings = () => {
+    setCurrentPage('settings');
+  };
+
   const handleParametersUpdated = (updatedData) => {
     // Update the financial data after parameters change
     if (updatedData) {
@@ -115,76 +123,97 @@ function App() {
 
   const currentTabIndex = pageToContentMap[currentPage] || 0;
 
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        {/* Use the Header component here */}
-        <Header currentPage={currentPage} onPageChange={setCurrentPage} />
+  // Main application content
+  const MainApp = () => (
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <Header currentPage={currentPage} onPageChange={setCurrentPage} />
 
-        <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
-          <ScenarioManager
-            currentScenarioId={currentScenarioId}
-            onScenarioChange={handleScenarioChange}
-          />
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
+        <ScenarioManager
+          currentScenarioId={currentScenarioId}
+          onScenarioChange={handleScenarioChange}
+          onNavigateToSettings={handleNavigateToSettings}
+        />
 
-          {currentScenarioId && (
-            <Box sx={{ p: 1 }}>
-              {currentTabIndex === 0 && (
-                <Dashboard
-                  financialData={financialData}
-                  staffData={staffData}
-                  loading={dataLoading}
-                />
-              )}
+        {currentScenarioId && (
+          <Box sx={{ p: 1 }}>
+            {currentTabIndex === 0 && (
+              <Dashboard
+                financialData={financialData}
+                staffData={staffData}
+                loading={dataLoading}
+                onNavigateToSettings={handleNavigateToSettings}
+              />
+            )}
 
-              {currentTabIndex === 1 && (
-                <Box>
-                  <FinancialChart data={financialData} />
-                  <FinancialTable data={financialData} />
-                </Box>
-              )}
+            {currentTabIndex === 1 && (
+              <Box>
+                <FinancialChart data={financialData} />
+                <FinancialTable data={financialData} />
+              </Box>
+            )}
 
-              {currentTabIndex === 2 && (
-                <ExpenseBreakdownChart scenarioId={currentScenarioId} data={expenseData} />
-              )}
+            {currentTabIndex === 2 && (
+              <ExpenseBreakdownChart scenarioId={currentScenarioId} data={expenseData} />
+            )}
 
-              {currentTabIndex === 3 && (
-                <StaffSummaryTable scenarioId={currentScenarioId} data={staffData} />
-              )}
+            {currentTabIndex === 3 && (
+              <StaffSummaryTable scenarioId={currentScenarioId} data={staffData} />
+            )}
 
-              {currentTabIndex === 4 && (
-                <RyzeParametersForm
-                  scenarioId={currentScenarioId}
-                  onParametersUpdated={handleParametersUpdated}
-                />
-              )}
-            </Box>
-          )}
+            {currentTabIndex === 4 && (
+              <RyzeParametersForm
+                scenarioId={currentScenarioId}
+                onParametersUpdated={handleParametersUpdated}
+              />
+            )}
+          </Box>
+        )}
 
-          {!currentScenarioId && (
-            <Box sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '50vh'
-            }}>
-              <Typography variant="h6" color="text.secondary">
-                Please select or create a scenario to begin
-              </Typography>
-            </Box>
-          )}
-        </Container>
-
-        <Box component="footer" sx={{ bgcolor: 'background.paper', py: 2, mt: 'auto' }}>
-          <Container maxWidth="lg">
-            <Typography variant="body2" color="text.secondary" align="center">
-              Financial Forecasting Tool © {new Date().getFullYear()}
+        {!currentScenarioId && (
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '50vh'
+          }}>
+            <Typography variant="h6" color="text.secondary">
+              Please select or create a scenario to begin
             </Typography>
-          </Container>
-        </Box>
+          </Box>
+        )}
+      </Container>
+
+      <Box component="footer" sx={{ bgcolor: 'background.paper', py: 2, mt: 'auto' }}>
+        <Container maxWidth="lg">
+          <Typography variant="body2" color="text.secondary" align="center">
+            GrowthCanvas Financial Tool © {new Date().getFullYear()}
+          </Typography>
+        </Container>
       </Box>
-    </ThemeProvider>
+    </Box>
+  );
+
+  return (
+    <Router>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Routes>
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/" element={
+            <PrivateRoute>
+              <MainApp />
+            </PrivateRoute>
+          } />
+          <Route path="/dashboard" element={<Navigate to="/" replace />} />
+          <Route path="/tables" element={<Navigate to="/" replace />} />
+          <Route path="/expenses" element={<Navigate to="/" replace />} />
+          <Route path="/staff" element={<Navigate to="/" replace />} />
+          <Route path="/settings" element={<Navigate to="/" replace />} />
+        </Routes>
+      </ThemeProvider>
+    </Router>
   );
 }
 
